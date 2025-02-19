@@ -26,9 +26,16 @@
                 <a href="" style="color: white">Pesan</a>
                 <a href="" style="color: white">Blog</a>
             </div>
-            <button type="button" href="" style="color: white; margin-top: -0.5rem; width:3.5rem" >
-                Login
-            </button>
+            @guest
+                <button type="button" href="" style="color: white; margin-top: -0.5rem; width:3.5rem" onclick="window.location.href='{{ route('login') }}'">
+                    Login
+                </button>
+            @endguest
+            @auth
+                <button type="button" href="" style="color: white; margin-top: -0.5rem; width:3.5rem" onclick="window.location.href='{{ route('logout') }}'">
+                    Logout
+                </button>
+            @endauth
         </nav>
     </header>
 </body>

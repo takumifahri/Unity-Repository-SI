@@ -12,6 +12,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
+
+    // Catalog
+    Route::get('/catalog', [CatalogController::class, 'indexAdmin'])->name('catalog.indexAdmin');  
+    Route::get('/catalog/create', [CatalogController::class, 'createAdmin'])->name('catalog.createAdmin'); 
+    Route::post('/catalog/submit', [CatalogController::class, 'storeAdmin'])->name('catalog.storeAdmin');
 })->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
