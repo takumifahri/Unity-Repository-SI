@@ -10,7 +10,7 @@ class ProductsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
         // $products = Product::query()->get();
         $products = new Product();

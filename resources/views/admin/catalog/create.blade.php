@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Add Data</title>
     <link rel="stylesheet" href="{{asset('bootstrap/css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{asset('bootstrap-css/css/bootstrap.css')}}">
     <link rel="stylesheet" href="{{asset('bootstrap-css/css/bootstrap-grid.css')}}">
@@ -36,38 +36,58 @@
         </style>
     @endif
 </head>
-<body >
-    <x-navbar />
-    
-    <main class="grid grid-cols-1 gap-5" >
-        {{-- Section Hero --}}
-        <div class="w-auto h-[30rem] flex justify-center border-2">
-            <img src="{{asset('assets/JrKonveksi/hero.jpeg')}}" alt="test" class="w-auto h-auto object-cover">
-        </div>
+<body>
+    <x-sidebar>
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="text-2xl">Add Catalogue</h2>
 
-        {{-- Section Product --}}
-        <div class="w-auto">
-            <div class="container">
-                @foreach ( $catalog as $data)
-                    <div class="card w-[20rem]">
-                        <div class="card-body grid grid-cols-1">
-                            <img src="{{$data->gambar}}" alt="alat sale" class="gambar w-auto">
-                            <h3 class="title text-xl">
-                                {{$data->nama_katalog}}
-                            </h3>
-                            <p class="text-md">
-                                {{$data->deskripsi}}
-                            </p>
-                            <p class="price text-md">
-                                {{$data->harga}}
-                            </p>
+                    <form action="{{ route('catalog.storeAdmin') }}" method="POST" class="form-catalogue">
+                        @csrf
+                        <div class="form-group">
+                            <label for="nama_katalog">Nama Katalog</label>
+                            <input type="text" name="nama_katalog" id="nama_katalog" class="form-control">
                         </div>
-                    </div>
-                @endforeach
-                
+                        <div class="form-group">
+                            <label for="tipe_bahan">Tipe Bahan</label>
+                            <select class="form-select form-select-sm" style="width: 100%" name="tipe_bahan" id="tipe_bahan"  aria-label=".form-select-sm example">
+                                <option selected>Open this select menu</option>
+                                <option value="kain">Kain</option>
+                                <option value="plastik">Plastik</option>
+                                <option value="kertas">Kertas</option>
+                            </select>
+                            {{-- <input type="text" name="tipe_bahan" id="tipe_bahan" class="form-control"> --}}
+                        </div>
+                        <div class="form-group">
+                            <label for="jenis_katalog">jenis_katalog</label>
+                            <select class="form-select form-select-sm" style="width: 100%" name="jenis_katalog" id="jenis_katalog"  aria-label=".form-select-sm example">
+                                <option selected>Open this select menu</option>
+                                <option value="baju">Baju</option>
+                                <option value="celana anak">Celana anak</option>
+                                <option value="baju keluarga">Baju Keluarga</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="deskripsi">Deskripsi</label>
+                            <textarea type="text" name="deskripsi" id="deskripsi" class="form-control"> </textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="harga">Harga</label>
+                            <input type="text" name="harga" id="harga" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="gambar">Gambar</label>
+                            <input type="file" name="gambar" id="gambar" class="form-control">
+                        </div>
+                        <button class="btn btn-primary mt-3">
+                            Submit
+                        </button>
+                    </form>
+                </div>
             </div>
+            
         </div>
-    </main>
-    
+    </x-sidebar>
 </body>
 </html>
