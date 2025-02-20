@@ -46,6 +46,7 @@ class CatalogController extends Controller
             'nama_katalog' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'tipe_bahan' => 'required|in:kain,plastik,kertas',
+            'stok' => 'required|numeric|min:0',
             'jenis_katalog' => 'required|in:baju,celana anak,baju keluarga',
             'harga' => 'required|numeric|min:0',
             'gambar' => 'required|file|mimes:jpeg,png,jpg,gif|max:2048',

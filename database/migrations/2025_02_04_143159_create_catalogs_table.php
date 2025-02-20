@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('catalog_id');
             $table->string('nama_katalog');
             $table->text('deskripsi');
+            $table->integer('stok');
             $table->enum('tipe_bahan', ['kain', 'plastik', 'kertas']);
             $table->enum('jenis_katalog', ['baju', 'celana anak', 'baju keluarga']);
             $table->integer('harga');

@@ -51,41 +51,53 @@
             <br>
             <table class="table table-bordered">
                 <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Price</th>
-                        <th>Materials</th>
-                        <th>Harga</th>
-                        <th>Gambar</th>
+                    <tr >
+                        <th style="text-align: center">No</th>
+                        <th style="text-align: center">Name</th>
+                        <th style="text-align: center">Description</th>
+                        <th style="text-align: center">Price</th>
+                        <th style="text-align: center">Materials</th>
+                        <th style="text-align: center">Harga</th>
+                        <th style="text-align: center">Gambar</th>
+                        <th style="text-align: center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($catalogs as $catalog)
+                    
+                    @if ($catalogs->isEmpty())
                         <tr>
-                            <?php static $i = 1; ?>
-                            <td>{{ $i++ }}</td>
-                            <td>{{ $catalog->nama_katalog }}</td>
-                            <td>{{ $catalog->deskripsi }}</td>
-                            <td>{{ $catalog->tipe_bahan }}</td>
-                            <td>{{ $catalog->jenis_katalog }}</td>
-                            <td>Rp {{ number_format($catalog->harga, 0, ',', '.') }}</td>
-                            <td><img src="{{ asset($catalog->gambar) }}" alt="Gambar"></td>
-                            <td>
-                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    <i class="ph ph-pencil"></i>
-                                </button>  
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    <i class="ph ph-trash"></i>
-                                </button> 
-                            </td>
+                            <td colspan="8" class="text-center">Data is empty</td>
                         </tr>
-                    @endforeach
+                    @else
+                        @foreach($catalogs as $catalog)
+                            <tr>
+                                <?php static $i = 1; ?>
+                                <td>{{ $i++ }}</td>
+                                <td>{{ $catalog->nama_katalog }}</td>
+                                <td>{{ $catalog->deskripsi }}</td>
+                                <td>{{ $catalog->tipe_bahan }}</td>
+                                <td>{{ $catalog->jenis_katalog }}</td>
+                                <td>Rp {{ number_format($catalog->harga, 0, ',', '.') }}</td>
+                                <td><img src="{{ asset($catalog->gambar) }}" alt="Gambar"></td>
+                                <td>
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal">
+                                        <i class="ph ph-pencil"></i>
+                                    </button>  
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        <i class="ph ph-trash"></i>
+                                    </button> 
+                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        <i class="ph ph-stack"></i>
+                                    </button> 
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
         <!-- Modal -->
+        {{-- Add Data --}}
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -129,6 +141,83 @@
                             <div class="form-group">
                                 <label for="gambar">Gambar</label>
                                 <input type="file" name="gambar" id="gambar" class="form-control">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Edit Data --}}
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Items to Catalogue</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('catalog.storeAdmin') }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
+                        @csrf
+                        <div class="modal-body  grid grid-cols-1 gap-2  ">
+                            <div class="form-group">
+                                <label for="nama_katalog">Nama Katalog</label>
+                                <input type="text" name="nama_katalog" id="nama_katalog" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="tipe_bahan">Tipe Bahan</label>
+                                <select class="form-select form-select-sm" style="width: 100%" name="tipe_bahan" id="tipe_bahan" aria-label=".form-select-sm example">
+                                    <option selected>Open this select menu</option>
+                                    <option value="kain">Kain</option>
+                                    <option value="plastik">Plastik</option>
+                                    <option value="kertas">Kertas</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="jenis_katalog">Jenis Katalog</label>
+                                <select class="form-select form-select-sm" style="width: 100%" name="jenis_katalog" id="jenis_katalog" aria-label=".form-select-sm example">
+                                    <option selected>Open this select menu</option>
+                                    <option value="baju">Baju</option>
+                                    <option value="celana anak">Celana Anak</option>
+                                    <option value="baju keluarga">Baju Keluarga</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="deskripsi">Deskripsi</label>
+                                <textarea type="text" name="deskripsi" id="deskripsi" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="harga">Harga</label>
+                                <input type="text" name="harga" id="harga" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="gambar">Gambar</label>
+                                <input type="file" name="gambar" id="gambar" class="form-control">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{-- Edit Data --}}
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Items to Catalogue</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('catalog.storeAdmin') }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
+                        @csrf
+                        <div class="modal-body  grid grid-cols-1 gap-2  ">
+                            <div class="form-group">
+                                <label for="stok">Jumlah Stock</label>
+                                <input type="text" name="stok" id="stok" class="form-control">
                             </div>
                         </div>
                         <div class="modal-footer">
