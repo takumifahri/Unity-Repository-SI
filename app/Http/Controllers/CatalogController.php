@@ -32,7 +32,7 @@ class CatalogController extends Controller
     }
     public function createAdmin(Request $request)
     {
-        //  
+        //  Menampilkan web create
         
         return view('admin.catalog.create');
     }
@@ -67,6 +67,7 @@ class CatalogController extends Controller
         $catalog->catalog_id = $newCatalogId;
         $catalog->nama_katalog = $request->nama_katalog;
         $catalog->deskripsi = $request->deskripsi;
+        $catalog->stok = $request->stok;
         $catalog->tipe_bahan = $request->tipe_bahan;
         $catalog->jenis_katalog = $request->jenis_katalog;
         $catalog->harga = $request->harga;
@@ -81,6 +82,39 @@ class CatalogController extends Controller
         // return redirect()->route('admin.catalog.index')->with('success', 'Catalog created successfully.');
     }
 
+    public function editAdmin(Request $request, $id)
+    {
+        $catalog = Catalog::find($id);
+        if (!$catalog) {
+            return redirect()->route('catalog.indexAdmin')->with('error', 'Catalog not found.');
+        }
+
+        $request->validate([
+            'nama_katalog' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'tipe_bahan' => 'required|in:kain,plastik,kertas',
+            'jenis_katalog' => 'required|in:baju,celana anak,baju keluarga',
+            'harga' => 'required|numeric|min:0',
+            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle file upload
+        if ($request->hasFile('gambar')) {
+            $fileName = time() . '.' . $request->gambar->extension();
+            $request->gambar->move(public_path('uploads'), $fileName);
+            $catalog->gambar = 'uploads/' . $fileName; // Sertakan path yang benar
+        }
+
+        $catalog->nama_katalog = $request->nama_katalog;
+        $catalog->deskripsi = $request->deskripsi;
+        $catalog->tipe_bahan = $request->tipe_bahan;
+        $catalog->jenis_katalog = $request->jenis_katalog;
+        $catalog->harga = $request->harga;
+
+        $catalog->save();
+
+        return redirect()->route('catalog.indexAdmin')->with('success', 'Catalog updated successfully.');
+    }
     /**
      * Display the specified resource.
      */

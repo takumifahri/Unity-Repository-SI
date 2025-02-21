@@ -55,6 +55,7 @@
                         <th style="text-align: center">No</th>
                         <th style="text-align: center">Name</th>
                         <th style="text-align: center">Description</th>
+                        <th style="text-align: center">Stock</th>
                         <th style="text-align: center">Price</th>
                         <th style="text-align: center">Materials</th>
                         <th style="text-align: center">Harga</th>
@@ -72,21 +73,22 @@
                         @foreach($catalogs as $catalog)
                             <tr>
                                 <?php static $i = 1; ?>
-                                <td>{{ $i++ }}</td>
-                                <td>{{ $catalog->nama_katalog }}</td>
-                                <td>{{ $catalog->deskripsi }}</td>
-                                <td>{{ $catalog->tipe_bahan }}</td>
-                                <td>{{ $catalog->jenis_katalog }}</td>
-                                <td>Rp {{ number_format($catalog->harga, 0, ',', '.') }}</td>
-                                <td><img src="{{ asset($catalog->gambar) }}" alt="Gambar"></td>
-                                <td>
+                                <td style="text-align: center">{{ $i++ }}</td>
+                                <td style="text-align: center">{{ $catalog->nama_katalog }}</td>
+                                <td style="text-align: center">{{ $catalog->deskripsi }}</td>
+                                <td style="text-align: center">{{ $catalog->stok }} Unit</td>
+                                <td style="text-align: center">{{ $catalog->tipe_bahan }}</td>
+                                <td style="text-align: center">{{ $catalog->jenis_katalog }}</td>
+                                <td style="text-align: center">Rp {{ number_format($catalog->harga, 0, ',', '.') }}</td>
+                                <td style="text-align: center"><img src="{{ asset($catalog->gambar) }}" alt="Gambar"></td>
+                                <td >
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal">
                                         <i class="ph ph-pencil"></i>
                                     </button>  
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#editModal">
                                         <i class="ph ph-trash"></i>
                                     </button> 
-                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#editModal">
                                         <i class="ph ph-stack"></i>
                                     </button> 
                                 </td>
@@ -135,6 +137,10 @@
                                 <textarea type="text" name="deskripsi" id="deskripsi" class="form-control"></textarea>
                             </div>
                             <div class="form-group">
+                                <label for="stok">Stock</label>
+                                <input type="number" name="stok" id="stok" class="form-control">
+                            </div>
+                            <div class="form-group">
                                 <label for="harga">Harga</label>
                                 <input type="text" name="harga" id="harga" class="form-control">
                             </div>
@@ -159,42 +165,42 @@
                         <h5 class="modal-title" id="editModalLabel">Edit Items to Catalogue</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('catalog.storeAdmin') }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
+                    <form action="{{ route('catalog.editAdmin', $catalog->id) }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
                         @csrf
+                        {{-- @method('PUT') --}}
                         <div class="modal-body  grid grid-cols-1 gap-2  ">
                             <div class="form-group">
                                 <label for="nama_katalog">Nama Katalog</label>
-                                <input type="text" name="nama_katalog" id="nama_katalog" class="form-control">
+                                <input type="text" name="nama_katalog" id="nama_katalog" class="form-control" value="{{ $catalog->nama_katalog }}">
                             </div>
                             <div class="form-group">
                                 <label for="tipe_bahan">Tipe Bahan</label>
                                 <select class="form-select form-select-sm" style="width: 100%" name="tipe_bahan" id="tipe_bahan" aria-label=".form-select-sm example">
-                                    <option selected>Open this select menu</option>
-                                    <option value="kain">Kain</option>
-                                    <option value="plastik">Plastik</option>
-                                    <option value="kertas">Kertas</option>
+                                    <option value="kain" {{ $catalog->tipe_bahan == 'kain' ? 'selected' : '' }}>Kain</option>
+                                    <option value="plastik" {{ $catalog->tipe_bahan == 'plastik' ? 'selected' : '' }}>Plastik</option>
+                                    <option value="kertas" {{ $catalog->tipe_bahan == 'kertas' ? 'selected' : '' }}>Kertas</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="jenis_katalog">Jenis Katalog</label>
                                 <select class="form-select form-select-sm" style="width: 100%" name="jenis_katalog" id="jenis_katalog" aria-label=".form-select-sm example">
-                                    <option selected>Open this select menu</option>
-                                    <option value="baju">Baju</option>
-                                    <option value="celana anak">Celana Anak</option>
-                                    <option value="baju keluarga">Baju Keluarga</option>
+                                    <option value="baju" {{ $catalog->jenis_katalog == 'baju' ? 'selected' : '' }}>Baju</option>
+                                    <option value="celana anak" {{ $catalog->jenis_katalog == 'celana anak' ? 'selected' : '' }}>Celana Anak</option>
+                                    <option value="baju keluarga" {{ $catalog->jenis_katalog == 'baju keluarga' ? 'selected' : '' }}>Baju Keluarga</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="deskripsi">Deskripsi</label>
-                                <textarea type="text" name="deskripsi" id="deskripsi" class="form-control"></textarea>
+                                <textarea type="text" name="deskripsi" id="deskripsi" class="form-control">{{ $catalog->deskripsi }}</textarea>
                             </div>
                             <div class="form-group">
                                 <label for="harga">Harga</label>
-                                <input type="text" name="harga" id="harga" class="form-control">
+                                <input type="text" name="harga" id="harga" class="form-control" value="{{ $catalog->harga }}">
                             </div>
                             <div class="form-group">
                                 <label for="gambar">Gambar</label>
                                 <input type="file" name="gambar" id="gambar" class="form-control">
+                                <img src="{{ asset($catalog->gambar) }}" alt="Gambar" class="img-thumbnail mt-2" width="100">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -204,12 +210,13 @@
                 </div>
             </div>
         </div>
+        
         {{-- Edit Data --}}
         <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">Edit Items to Catalogue</h5>
+                        <h5 class="modal-title" id="editModalLabel">Enter item's stock to Catalogue</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('catalog.storeAdmin') }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
