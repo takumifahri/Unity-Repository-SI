@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Catalog;
+use App\Models\DeleteDetail;
+use App\Models\DeleteReason;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use function public_path;
 
 class CatalogController extends Controller
 {
@@ -15,7 +19,7 @@ class CatalogController extends Controller
     {
         // $products = Product::query()->get();
         $catalog = new Catalog();
-        $catalogs = $catalog->query()->get();
+        $catalogs = $catalog->query()->paginate(10);
         return view('guest.catalog', ['catalog' => $catalogs]);
     }
 
@@ -49,7 +53,7 @@ class CatalogController extends Controller
             'stok' => 'required|numeric|min:0',
             'jenis_katalog' => 'required|in:baju,celana anak,baju keluarga',
             'harga' => 'required|numeric|min:0',
-            'gambar' => 'required|file|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar' => 'required|file|mimes:jpeg,png,jpg,gif|max:10240', // Max 10MB
         ]);
 
         // Handle file upload
@@ -60,20 +64,15 @@ class CatalogController extends Controller
             return back()->withErrors(['gambar' => 'File gambar tidak ditemukan.']);
         }
         // Find the maximum catalog_id and increment it
-        $maxCatalogId = Catalog::max('catalog_id');
-        $newCatalogId = $maxCatalogId ? $maxCatalogId + 1 : 1;
-
-        $catalog = new Catalog();
-        $catalog->catalog_id = $newCatalogId;
-        $catalog->nama_katalog = $request->nama_katalog;
-        $catalog->deskripsi = $request->deskripsi;
-        $catalog->stok = $request->stok;
-        $catalog->tipe_bahan = $request->tipe_bahan;
-        $catalog->jenis_katalog = $request->jenis_katalog;
-        $catalog->harga = $request->harga;
-        $catalog->gambar = 'uploads/' . $fileName; // Sertakan path yang benar
-        
-        $catalog->save();
+        $catalog = Catalog::create([
+            'nama_katalog' => $request->nama_katalog,
+            'deskripsi' => $request->deskripsi,
+            'stok' => $request->stok,
+            'tipe_bahan' => $request->tipe_bahan,
+            'jenis_katalog' => $request->jenis_katalog,
+            'harga' => $request->harga,
+            'gambar' => 'uploads/' . $fileName, // Sertakan path yang benar
+        ]);
         if ($catalog->wasRecentlyCreated) {
             return redirect()->route('catalog.indexAdmin')->with('success', 'Catalog created successfully.');
         } else {
@@ -104,25 +103,61 @@ class CatalogController extends Controller
             $request->gambar->move(public_path('uploads'), $fileName);
             $catalog->gambar = 'uploads/' . $fileName; // Sertakan path yang benar
         }
-
-        $catalog->nama_katalog = $request->nama_katalog;
-        $catalog->deskripsi = $request->deskripsi;
-        $catalog->tipe_bahan = $request->tipe_bahan;
-        $catalog->jenis_katalog = $request->jenis_katalog;
-        $catalog->harga = $request->harga;
-
-        $catalog->save();
+        $catalog->update([
+            'nama_katalog' => $request->nama_katalog,
+            'deskripsi' => $request->deskripsi,
+            'tipe_bahan' => $request->tipe_bahan,
+            'jenis_katalog' => $request->jenis_katalog,
+            'harga' => $request->harga,
+        ]);
 
         return redirect()->route('catalog.indexAdmin')->with('success', 'Catalog updated successfully.');
     }
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+
+    public function addStockCatalog(Request $request, $id)
     {
-        //
+        $catalog = Catalog::find($id);
+        if (!$catalog) {
+            return redirect()->route('catalog.indexAdmin')->with('error', 'Catalog not found.');
+        }
+
+        $request->validate([
+            'stok' => 'required|numeric|min:0',
+        ]);
+
+        $catalog->stok += $request->stok;
+        $catalog->save();
+
+        return redirect()->route('catalog.indexAdmin')->with('success', 'Stock added successfully.');
     }
 
+   public function destroyItems(Request $request, $id)
+    {
+        $catalog = Catalog::find($id);
+        if (!$catalog) {
+            return redirect()->route('catalog.indexAdmin')->with('error', 'Catalog not found.');
+        }
+
+        $request->validate([
+            'reason' => 'required|string',
+            'catalog_id' => 'required|exists:catalogs,id',
+            'nama_katalog' => 'required|string',
+            'deskripsi' => 'required|string',
+        ]);
+
+        $detailDelete = DeleteDetail::create([
+            'reason' => $request->reason,
+            'catalog_id' => $request->catalog_id,
+            'nama_katalog' => $request->$catalog->nama_katalog,
+            'deskripsi' => $request->$catalog->deskripsi,
+        ]);
+        
+        $catalog->delete();
+        return redirect()->route('catalog.indexAdmin')->with('success', 'Catalog deleted successfully.');
+    }
     /**
      * Show the form for editing the specified resource.
      */

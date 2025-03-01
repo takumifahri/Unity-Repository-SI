@@ -11,23 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('catalogs', function (Blueprint $table) {
+        Schema::create('delete_details', function (Blueprint $table) {
             $table->id();
+            $table->string('reason');
+            $table->unsignedBigInteger('catalog_id');
             $table->string('nama_katalog');
             $table->text('deskripsi');
-            $table->integer('stok');
-            $table->enum('tipe_bahan', ['kain', 'plastik', 'kertas']);
-            $table->enum('jenis_katalog', ['baju', 'celana anak', 'baju keluarga']);
-            $table->integer('harga');
-            $table->string('gambar');
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('catalogs');
+        Schema::dropIfExists('delete_details');
     }
 };

@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use App\Models\Catalog;
+use App\Observers\CatalogObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -13,12 +14,17 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
+    protected $listen = [
+        'App\Events\CatalogChanged' => [
+            'App\Listeners\LogCatalogChange',
+        ],
+    ];
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
         //
+        Catalog::observe(CatalogObserver::class);
     }
 }

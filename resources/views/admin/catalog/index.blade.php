@@ -30,23 +30,7 @@
                     </button>     
                 </div>
                 
-                @if ('success')
-                    <script>
-                        Swal2.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Data has been added'
-                        })
-                    </script>
-                    @elseif ('error')
-                    <script>
-                        Swal2.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Data failed to add'
-                        })
-                    </script>
-                @endif
+               
             </div>
             <br>
             <table class="table table-bordered">
@@ -85,10 +69,10 @@
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal">
                                         <i class="ph ph-pencil"></i>
                                     </button>  
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#editModal">
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                         <i class="ph ph-trash"></i>
                                     </button> 
-                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#editModal">
+                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#stockModal">
                                         <i class="ph ph-stack"></i>
                                     </button> 
                                 </td>
@@ -98,7 +82,7 @@
                 </tbody>
             </table>
         </div>
-        <!-- Modal -->
+
         {{-- Add Data --}}
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -107,7 +91,7 @@
                         <h5 class="modal-title" id="exampleModalLabel">Add Items to Catalogue</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('catalog.storeAdmin') }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
+                    <form id="addDataCatalog" action="{{ route('catalog.storeAdmin') }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
                         @csrf
                         <div class="modal-body  grid grid-cols-1 gap-2  ">
                             <div class="form-group">
@@ -157,84 +141,176 @@
             </div>
         </div>
 
-        {{-- Edit Data --}}
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">Edit Items to Catalogue</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        @if(isset($catalog))
+            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Edit Items to Catalogue</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ route('catalog.editAdmin', $catalog->id) }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
+                            @csrf
+                            {{-- @method('PUT') --}}
+                            <div class="modal-body  grid grid-cols-1 gap-2  ">
+                                <div class="form-group">
+                                    <label for="nama_katalog">Nama Katalog</label>
+                                    <input type="text" name="nama_katalog" id="nama_katalog" class="form-control" value="{{ $catalog->nama_katalog }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tipe_bahan">Tipe Bahan</label>
+                                    <select class="form-select form-select-sm" style="width: 100%" name="tipe_bahan" id="tipe_bahan" aria-label=".form-select-sm example">
+                                        <option value="kain" {{ $catalog->tipe_bahan == 'kain' ? 'selected' : '' }}>Kain</option>
+                                        <option value="plastik" {{ $catalog->tipe_bahan == 'plastik' ? 'selected' : '' }}>Plastik</option>
+                                        <option value="kertas" {{ $catalog->tipe_bahan == 'kertas' ? 'selected' : '' }}>Kertas</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="jenis_katalog">Jenis Katalog</label>
+                                    <select class="form-select form-select-sm" style="width: 100%" name="jenis_katalog" id="jenis_katalog" aria-label=".form-select-sm example">
+                                        <option value="baju" {{ $catalog->jenis_katalog == 'baju' ? 'selected' : '' }}>Baju</option>
+                                        <option value="celana anak" {{ $catalog->jenis_katalog == 'celana anak' ? 'selected' : '' }}>Celana Anak</option>
+                                        <option value="baju keluarga" {{ $catalog->jenis_katalog == 'baju keluarga' ? 'selected' : '' }}>Baju Keluarga</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deskripsi">Deskripsi</label>
+                                    <textarea type="text" name="deskripsi" id="deskripsi" class="form-control">{{ $catalog->deskripsi }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="harga">Harga</label>
+                                    <input type="text" name="harga" id="harga" class="form-control" value="{{ $catalog->harga }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="gambar">Gambar</label>
+                                    <input type="file" name="gambar" id="gambar" class="form-control">
+                                    <img src="{{ asset($catalog->gambar) }}" alt="Gambar" class="img-thumbnail mt-2" width="100">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
                     </div>
-                    <form action="{{ route('catalog.editAdmin', $catalog->id) }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
-                        @csrf
-                        {{-- @method('PUT') --}}
-                        <div class="modal-body  grid grid-cols-1 gap-2  ">
-                            <div class="form-group">
-                                <label for="nama_katalog">Nama Katalog</label>
-                                <input type="text" name="nama_katalog" id="nama_katalog" class="form-control" value="{{ $catalog->nama_katalog }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="tipe_bahan">Tipe Bahan</label>
-                                <select class="form-select form-select-sm" style="width: 100%" name="tipe_bahan" id="tipe_bahan" aria-label=".form-select-sm example">
-                                    <option value="kain" {{ $catalog->tipe_bahan == 'kain' ? 'selected' : '' }}>Kain</option>
-                                    <option value="plastik" {{ $catalog->tipe_bahan == 'plastik' ? 'selected' : '' }}>Plastik</option>
-                                    <option value="kertas" {{ $catalog->tipe_bahan == 'kertas' ? 'selected' : '' }}>Kertas</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="jenis_katalog">Jenis Katalog</label>
-                                <select class="form-select form-select-sm" style="width: 100%" name="jenis_katalog" id="jenis_katalog" aria-label=".form-select-sm example">
-                                    <option value="baju" {{ $catalog->jenis_katalog == 'baju' ? 'selected' : '' }}>Baju</option>
-                                    <option value="celana anak" {{ $catalog->jenis_katalog == 'celana anak' ? 'selected' : '' }}>Celana Anak</option>
-                                    <option value="baju keluarga" {{ $catalog->jenis_katalog == 'baju keluarga' ? 'selected' : '' }}>Baju Keluarga</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="deskripsi">Deskripsi</label>
-                                <textarea type="text" name="deskripsi" id="deskripsi" class="form-control">{{ $catalog->deskripsi }}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="harga">Harga</label>
-                                <input type="text" name="harga" id="harga" class="form-control" value="{{ $catalog->harga }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="gambar">Gambar</label>
-                                <input type="file" name="gambar" id="gambar" class="form-control">
-                                <img src="{{ asset($catalog->gambar) }}" alt="Gambar" class="img-thumbnail mt-2" width="100">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                    </form>
                 </div>
             </div>
-        </div>
-        
-        {{-- Edit Data --}}
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">Enter item's stock to Catalogue</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form action="{{ route('catalog.storeAdmin') }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
-                        @csrf
-                        <div class="modal-body  grid grid-cols-1 gap-2  ">
-                            <div class="form-group">
-                                <label for="stok">Jumlah Stock</label>
-                                <input type="text" name="stok" id="stok" class="form-control">
+
+            {{-- Stock Data --}}
+            <div class="modal fade" id="stockModal" tabindex="-1" aria-labelledby="stockModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="stockModalLabel">Enter item's stock to Catalogue</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ route('catalog.addStock', $catalog->id) }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
+                            @csrf
+                            <div class="modal-body  grid grid-cols-1 gap-2  ">
+                                <div class="form-group">
+                                    <label for="stok">Jumlah Stock</label>
+                                    <input type="number" name="stok" id="stok" class="form-control" value="{{ $catalog->stok }}">
+                                </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                    </form>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            {{-- Delete --}}
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Enter your reason why delete this item?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ route('catalog.destroyAdmin', $catalog->id) }}" method="POST" enctype="multipart/form-data" class="form-catalogue">
+                            @csrf
+                            <div class="modal-body  grid grid-cols-1 gap-2  ">
+                                <div class="form-group">
+                                    <label for="nama_katalog">Nama Katalog</label>
+                                    <input type="text" name="nama_katalog" id="nama_katalog" class="form-control" value="{{$catalog->nama_katalog}}"  readonly>
+                                </div>
+                            </div>
+                            <div class="modal-body  grid grid-cols-1 gap-2  ">
+                                <div class="form-group">
+                                    <label for="deskripsi">Deskripsi</label>
+                                    <input type="text" name="deskripsi" id="deskripsi" class="form-control" value="{{$catalog->deskripsi}}"  readonly>
+                                </div>
+                            </div>
+                            <div class="modal-body  grid grid-cols-1 gap-2  ">
+                                <div class="form-group">
+                                    <label for="reason">Reason</label>
+                                    <input type="text" name="reason" id="reason" class="form-control">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-danger">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
+
     </x-sidebar>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#addDataCatalog').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Data has been added',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function() {
+                            location.reload();
+                        });
+                    },
+                    error: function(response) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.responseJSON.message
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+   
+        <script>
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Data has been added'
+                }) 
+            @elseif (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Data failed to add'
+                })
+            @endif
+        
+        </script>
+      
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
