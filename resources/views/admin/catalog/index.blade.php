@@ -101,16 +101,27 @@
                             <div class="form-group">
                                 <label for="tipe_bahan">Tipe Bahan</label>
                                 <select class="form-select form-select-sm" style="width: 100%" name="tipe_bahan" id="tipe_bahan" aria-label=".form-select-sm example">
-                                    <option selected>Open this select menu</option>
-                                    <option value="kain">Kain</option>
-                                    <option value="plastik">Plastik</option>
-                                    <option value="kertas">Kertas</option>
+                                    <option selected>Pilih</option>
+                                    <option value="Cotton Combed">Cotton Combed</option>
+                                    <option value="Cotton Slub">Cotton Slub</option>
+                                    <option value="Polyester">Polyester</option>
+                                    <option value="Tri-blend">Tri-blend</option>
+                                    <option value="Rayon">Rayon</option>
+                                    <option value="Spandex">Spandex</option>
+                                    <option value="Teteron Cotton (TC)">Teteron Cotton (TC)</option>
+                                    <option value="Viscose">Viscose</option>
+                                    <option value="Hyget">Hyget</option>
+                                    <option value="Baby Terry">Baby Terry</option>
+                                    <option value="Lacoste">Lacoste</option>
+                                    <option value="CVC (Chief Value Cotton)">CVC (Chief Value Cotton)</option>
+                                    <option value="Drill">Drill</option>
+                                    <option value="Fleece">Fleece</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="jenis_katalog">Jenis Katalog</label>
                                 <select class="form-select form-select-sm" style="width: 100%" name="jenis_katalog" id="jenis_katalog" aria-label=".form-select-sm example">
-                                    <option selected>Open this select menu</option>
+                                    <option selected>Pilih</option>
                                     <option value="baju">Baju</option>
                                     <option value="celana anak">Celana Anak</option>
                                     <option value="baju keluarga">Baju Keluarga</option>

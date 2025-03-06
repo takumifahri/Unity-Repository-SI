@@ -19,8 +19,6 @@ return new class extends Migration
             $table->json('new_value')->nullable();
             $table->json('old_value')->nullable();
             $table->timestamp('deleted_at')->nullable();
-            // $table->timestamp('updated_at')->nullable();
-            // $table->timestamp('created_at')->nullable();
             $table->timestamps();
         });
     }

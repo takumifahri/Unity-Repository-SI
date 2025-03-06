@@ -16,12 +16,16 @@ class CatalogObserver
     public function created(Catalog $catalog): void
     {
         //
-        HistoryAll::create([
-            'user_id' =>  Auth::id(),
-            'items_id' => $catalog->id,
-            'new_value' => json_encode($catalog->getAttributes()), // Convert attributes to JSON
-            'created_at' => now(),
-        ]);
+        $user = Auth::user();
+        if ($user) {
+            HistoryAll::create([
+                'user_id' => $user->id,
+                'items_id' => $catalog->id,
+                'new_value' => json_encode($catalog->getAttributes()), // Convert attributes to JSON
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**

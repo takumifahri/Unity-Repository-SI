@@ -16,7 +16,12 @@ return new class extends Migration
             $table->string('nama_katalog');
             $table->text('deskripsi');
             $table->integer('stok');
-            $table->enum('tipe_bahan', ['kain', 'plastik', 'kertas']);
+            $table->enum('tipe_bahan', [
+                'Cotton Combed', 'Cotton Slub', 'Polyester', 
+                'Tri-blend', 'Rayon', 'Spandex', 'Teteron Cotton (TC)', 
+                'Viscose', 'Hyget', 'Baby Terry', 'Lacoste', 
+                'CVC (Chief Value Cotton)', 'Drill', 'Fleece'
+            ]);
             $table->enum('jenis_katalog', ['baju', 'celana anak', 'baju keluarga']);
             $table->integer('harga');
             $table->string('gambar');
