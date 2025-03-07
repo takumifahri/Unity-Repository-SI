@@ -13,17 +13,21 @@ return new class extends Migration
     {
         Schema::create('catalogs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('catalog_id');
             $table->string('nama_katalog');
             $table->text('deskripsi');
-            $table->enum('tipe_bahan', ['kain', 'plastik', 'kertas']);
+            $table->integer('stok');
+            $table->enum('tipe_bahan', [
+                'Cotton Combed', 'Cotton Slub', 'Polyester', 
+                'Tri-blend', 'Rayon', 'Spandex', 'Teteron Cotton (TC)', 
+                'Viscose', 'Hyget', 'Baby Terry', 'Lacoste', 
+                'CVC (Chief Value Cotton)', 'Drill', 'Fleece'
+            ]);
             $table->enum('jenis_katalog', ['baju', 'celana anak', 'baju keluarga']);
             $table->integer('harga');
             $table->string('gambar');
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

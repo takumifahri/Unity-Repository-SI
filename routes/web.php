@@ -15,7 +15,10 @@ Route::prefix('admin')->group(function () {
 
     // Catalog
     Route::get('/catalog', [CatalogController::class, 'indexAdmin'])->name('catalog.indexAdmin');  
-    Route::get('/catalog/create', [CatalogController::class, 'createAdmin'])->name('catalog.createAdmin'); 
+    Route::get('/catalog/create', [CatalogController::class, 'createAdmin'])->name('catalog.createAdmin');
+    Route::post('/catalog/edit/{id}', [CatalogController::class, 'editAdmin'])->name('catalog.editAdmin');
+    Route::post('/catalog/addStock/{id}', [CatalogController::class, 'addStockCatalog'])->name('catalog.addStock'); 
+    Route::post('/catalog/delete/{id}', [CatalogController::class, 'destroyWithReason'])->name('catalog.destroyAdmin');
     Route::post('/catalog/submit', [CatalogController::class, 'storeAdmin'])->name('catalog.storeAdmin');
 })->middleware(['auth', 'verified']);
 
