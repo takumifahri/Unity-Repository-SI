@@ -26,6 +26,7 @@ class CatalogControllerApi extends Controller
     {
         $catalogs = Catalog::all();
         
+        
         if($catalogs->isEmpty()){
             return response()->json([
                 'message' => 'Catalog not found',
@@ -93,75 +94,56 @@ class CatalogControllerApi extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function storeAdmin(Request $request)
-    {
-        $request->validate([
-            'nama_katalog' => 'required|string|max:255',
-            'deskripsi' => 'required|string',
-            'tipe_bahan' => 'required|in:kain,plastik,kertas',
-            'stok' => 'required|numeric|min:0',
-            'jenis_katalog' => 'required|in:baju,celana anak,baju keluarga',
-            'harga' => 'required|numeric|min:0',
-            'gambar' => 'required|file|mimes:jpeg,png,jpg,gif|max:10240', // Max 10MB
-        ]);
 
-        // Handle file upload
-        if ($request->hasFile('gambar')) {
-            $fileName = time() . '.' . $request->gambar->extension();
-            $request->gambar->move(public_path('uploads'), $fileName);
-        } else {
-            return back()->withErrors(['gambar' => 'File gambar tidak ditemukan.']);
-        }
-        // Find the maximum catalog_id and increment it
-        $catalog = Catalog::create([
-            'nama_katalog' => $request->nama_katalog,
-            'deskripsi' => $request->deskripsi,
-            'stok' => $request->stok,
-            'tipe_bahan' => $request->tipe_bahan,
-            'jenis_katalog' => $request->jenis_katalog,
-            'harga' => $request->harga,
-            'gambar' => 'uploads/' . $fileName, // Sertakan path yang benar
-        ]);
-        if ($catalog->wasRecentlyCreated) {
-            return redirect()->route('catalog.indexAdmin')->with('success', 'Catalog created successfully.');
-        } else {
-            return redirect()->route('catalog.indexAdmin')->with('error', 'Failed to create catalog.');
-        }
-        // return redirect()->route('admin.catalog.index')->with('success', 'Catalog created successfully.');
-    }
-
-    public function editAdmin(Request $request, $id)
+    public function updateCatalog(Request $request, $id)
     {
         $catalog = Catalog::find($id);
         if (!$catalog) {
-            return redirect()->route('catalog.indexAdmin')->with('error', 'Catalog not found.');
+            return response()->json('Catalog not found.', 404);
         }
-
-        $request->validate([
-            'nama_katalog' => 'required|string|max:255',
-            'deskripsi' => 'required|string',
-            'tipe_bahan' => 'required|in:kain,plastik,kertas',
-            'jenis_katalog' => 'required|in:baju,celana anak,baju keluarga',
-            'harga' => 'required|numeric|min:0',
-            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // Handle file upload
-        if ($request->hasFile('gambar')) {
-            $fileName = time() . '.' . $request->gambar->extension();
-            $request->gambar->move(public_path('uploads'), $fileName);
-            $catalog->gambar = 'uploads/' . $fileName; // Sertakan path yang benar
+        try{
+            $validate = $request->validate([
+                'nama_katalog' => 'nullable|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'tipe_bahan' => 'nullable|in:kain,plastik,kertas',
+                'jenis_katalog' => 'nullable|in:baju,celana anak,baju keluarga',
+                'harga' => 'nullable|numeric|min:0',
+                'gambar' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            
+    
+            // Handle file upload
+            if ($request->hasFile('gambar')) {
+                $fileName = time() . '.' . $request->gambar->extension();
+                $request->gambar->move(public_path('uploads'), $fileName);
+                $catalog->gambar = 'uploads/' . $fileName; // Sertakan path yang benar
+            }
+            $catalog->update([
+                'nama_katalog' => $validate['nama_katalog'] ?? $catalog->nama_katalog,
+                'deskripsi' => $validate['deskripsi'] ?? $catalog->deskripsi,
+                'tipe_bahan' => $validate['tipe_bahan'] ?? $catalog->tipe_bahan,
+                'jenis_katalog' => $validate['jenis_katalog'] ?? $catalog->jenis_katalog,
+                'harga' => $validate['harga'] ?? $catalog->harga,
+                'gambar' => $validate['gambar'] ? 'uploads/' . $fileName : $catalog->gambar,
+            ]);
+            return response()->json([
+                'message' => 'Catalog updated successfully',
+                'data' => $catalog,
+                'status' => 'success'
+            ],200);
+        } catch(\Exception $e){
+            return response()->json([
+                'message' => 'Failed to update catalog',
+                'detail message' => $e->getMessage(),
+                'status' => 'failed'
+            ],500);
         }
-        $catalog->update([
-            'nama_katalog' => $request->nama_katalog,
-            'deskripsi' => $request->deskripsi,
-            'tipe_bahan' => $request->tipe_bahan,
-            'jenis_katalog' => $request->jenis_katalog,
-            'harga' => $request->harga,
-        ]);
+        
 
-        return redirect()->route('catalog.indexAdmin')->with('success', 'Catalog updated successfully.');
+        
+        // return redirect()->route('catalog.indexAdmin')->with('success', 'Catalog updated successfully.');
     }
+
     /**
      * Display the specified resource.
      */
@@ -170,17 +152,29 @@ class CatalogControllerApi extends Controller
     {
         $catalog = Catalog::find($id);
         if (!$catalog) {
-            return redirect()->route('catalog.indexAdmin')->with('error', 'Catalog not found.');
+            return response()->json('Catalog not found.', 404);
         }
-
-        $request->validate([
-            'stok' => 'required|numeric|min:0',
-        ]);
-
-        $catalog->stok += $request->stok;
-        $catalog->save();
-
-        return redirect()->route('catalog.indexAdmin')->with('success', 'Stock added successfully.');
+        
+        try{
+            $validate = $request->validate([
+                'stok' => 'required|numeric|min:0',
+            ]);
+    
+            $catalog->update([
+                'stok' => $catalog->stok + $validate['stok'],
+            ]);
+            return response()->json([
+                'message' => 'Stock added successfully',
+                'data' => $catalog,
+                'status' => 'success'
+            ],200);
+        } catch(\Exception $e){
+            return response()->json([
+                'message' => 'Failed to add stock',
+                'detail message' => $e->getMessage(),
+                'status' => 'failed'
+            ],500);
+        }
     }
 
    public function destroyItems(Request $request, $id)

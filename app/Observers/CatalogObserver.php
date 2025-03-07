@@ -34,16 +34,24 @@ class CatalogObserver
     public function updated(Catalog $catalog): void
     {
         //
-        $changes = $catalog->getChanges();
-        foreach ($changes as $field => $newValue) {
-            $oldValue = $catalog->getOriginal($field);
+        $user = Auth::user();
+        if ($user) {
+            $changes = $catalog->getChanges();
+            $newValues = [];
+            $oldValues = [];
+            foreach ($changes as $field => $newValue) {
+                $oldValue = $catalog->getOriginal($field);
+                $newValues[$field] = $newValue;
+                $oldValues[$field] = $oldValue;
+            }
             HistoryAll::create([
+                'user_id' => $user->id,
                 'items_id' => $catalog->id,
-                'new_value' => $newValue,
-                'old_value' => $oldValue,
+                'new_value' => json_encode($newValues), // Convert new values to JSON
+                'old_value' => json_encode($oldValues), // Convert old values to JSON
                 'updated_at' => now(),
             ]);
-        }
+        } 
     }
 
     /**
@@ -53,6 +61,7 @@ class CatalogObserver
     {
         //
         HistoryAll::create([
+            'user_id' => Auth::id(),
             'items_id' => $catalog->id,
             'reason' => $deleteReason->reason,
             'deleted_at' => now(),

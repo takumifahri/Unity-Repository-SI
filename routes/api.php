@@ -22,7 +22,7 @@ Route::post('/auth/logout', [AuthControllerApi::class, 'Logout']);
 Route::prefix('/catalog')->group(function () {
     Route::get('/', [CatalogControllerApi::class, 'index']);
     Route::post('/store', [CatalogControllerApi::class, 'store']);
-    Route::post('/admin', [CatalogControllerApi::class, 'storeAdmin']);
-    Route::put('/admin/{id}', [CatalogControllerApi::class, 'updateAdmin']);
+    Route::post('/update/{id}', [CatalogControllerApi::class, 'updateCatalog']);
+    Route::post('/addStock/{id}', [CatalogControllerApi::class, 'addStockCatalog']);
     Route::delete('/admin/{id}', [CatalogControllerApi::class, 'destroyAdmin']);
 });
